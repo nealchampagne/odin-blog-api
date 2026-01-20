@@ -21,12 +21,15 @@ app.use(passport.initialize());
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Routes
-app.get('/', (req, res) => { res.send('API is running'); });
+app.use((req, res, next) => {
+  console.log("INCOMING:", req.method, req.url);
+  next();
+});
 
-app.use(commentsRouter);
-app.use('/posts', postsRouter);
+// Routes
 app.use('/users', usersRouter);
+app.use('/posts', postsRouter);
+app.use('/', commentsRouter);
 
 app.use((
   err: Error & { status?: number },

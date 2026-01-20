@@ -54,6 +54,7 @@ const getAllPosts = async (req: Request, res: Response) => {
       where: isAdmin ? {} : { published: true },
       orderBy: { createdAt: 'desc' },
     });
+
     res.json(posts);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch posts' });
@@ -63,6 +64,30 @@ const getAllPosts = async (req: Request, res: Response) => {
 // --------------------
 // Admin-only posts routes
 // --------------------
+
+const getAdminStats = async (req: Request, res: Response) => {
+  try {
+    const [totalPosts, draftPosts, publishedPosts, totalComments, totalUsers] =
+      await Promise.all([
+        prisma.post.count(),
+        prisma.post.count({ where: { published: false } }),
+        prisma.post.count({ where: { published: true } }),
+        prisma.comment.count(),
+        prisma.user.count()
+      ]);
+      
+    res.json({
+      totalPosts,
+      draftPosts,
+      publishedPosts,
+      totalComments,
+      totalUsers
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load stats" });
+  }
+};
+
 const createPost = async (req: Request, res: Response) => {
   const { title, content } = req.body;
   const authorId = req.user!.id;
@@ -92,6 +117,9 @@ const updatePost = async (req: Request, res: Response) => {
       where: { id: postId },
       data: { title, content },
     });
+
+    console.log(post);
+    console.log(req.user);
     res.json(updatedPost);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update post' });
@@ -156,4 +184,5 @@ export default {
   deletePost,
   publishPost,
   unpublishPost,
+  getAdminStats,
 };

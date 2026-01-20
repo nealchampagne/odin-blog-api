@@ -1,6 +1,6 @@
 import prisma from '../lib/prisma';
 import type { Request, Response } from 'express';
-import type { User } from '@prisma/client';
+import type { User as PrismaUser} from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -20,7 +20,7 @@ const getUserOrFail = async (userId: string, res: Response) => {
   return user;
 };
 
-const sanitizeUser = ({ password, ...rest}: User) => rest;
+const sanitizeUser = ({ password, ...rest}: PrismaUser) => rest;
 
 // --------------------
 // Public users route controllers
@@ -46,6 +46,11 @@ const registerUser = async (req: Request, res: Response) => {
 
 const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+
+  console.log("LOGIN BODY:", req.body);
+  console.log("HEADERS:", req.headers);
+  console.log("ROUTE HIT");
+
 
   try {
     const user = await prisma.user.findUnique({

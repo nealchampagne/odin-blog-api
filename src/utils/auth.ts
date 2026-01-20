@@ -1,9 +1,8 @@
+import type { JwtUserPayload } from "../types/jwt";
+
 export const assertOwnershipOrAdmin = (
   resourceAuthorId: string,
-  user: Express.User
+  user: JwtUserPayload
 ) => {
-  if (user.role === 'ADMIN' || resourceAuthorId === user.id) {
-    return true;
-  }
-  return false;
+  return user.role === "ADMIN" || resourceAuthorId === user.id;
 };
