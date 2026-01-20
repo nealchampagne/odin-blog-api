@@ -1,0 +1,159 @@
+import prisma from '../lib/prisma';
+import type { Request, Response } from 'express';
+
+// --------------------
+// Helpers
+// --------------------
+const getPostOrFail = async (postId: string, res: Response) => {
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: { comments: true },
+  });
+  
+  if (!post) {
+    res.status(404).json({ error: 'Post not found' });
+    return null;
+  }
+  return post;
+}
+
+// --------------------
+// Public posts controllers
+// --------------------
+const getPostById = async (req: Request, res: Response) => {
+  const postId = req.params.id!;
+
+  try {
+    const isAdmin = req.user?.role === 'ADMIN';
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      include: { comments: true },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    if (!post.published && !isAdmin) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch post' });
+  }
+};
+
+const getAllPosts = async (req: Request, res: Response) => {
+  try {
+
+    const isAdmin = req.user?.role === 'ADMIN';
+
+    const posts = await prisma.post.findMany({
+      where: isAdmin ? {} : { published: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch posts' });
+  }
+};
+
+// --------------------
+// Admin-only posts routes
+// --------------------
+const createPost = async (req: Request, res: Response) => {
+  const { title, content } = req.body;
+  const authorId = req.user!.id;
+
+  try {
+    if (!title.trim() || !content) {
+      return res.status(400).json({ error: 'Title and content are required' });
+    }
+    const newPost = await prisma.post.create({
+      data: { authorId, title, content },
+    });
+    res.status(201).json(newPost);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create post' });
+  }
+};
+
+const updatePost = async (req: Request, res: Response) => {
+  const postId = req.params.id!;
+  const { title, content } = req.body;
+
+  const post = await getPostOrFail(postId, res);
+  if (!post) return;
+
+  try {
+    const updatedPost = await prisma.post.update({
+      where: { id: postId },
+      data: { title, content },
+    });
+    res.json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update post' });
+  }
+};
+
+const deletePost = async (req: Request, res: Response) => {
+  const postId = req.params.id!;
+
+  const post = await getPostOrFail(postId, res);
+  if (!post) return;
+
+  try {
+    await prisma.post.delete({
+      where: { id: postId },
+    });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete post' });
+  }
+};
+
+const publishPost = async (req: Request, res: Response) => {
+  const postId = req.params.id!;
+
+  const post = await getPostOrFail(postId, res);
+  if (!post) return;
+
+  try {
+    const publishedPost = await prisma.post.update({
+      where: { id: postId },
+      data: { published: true },
+    });
+    res.json(publishedPost);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to publish post' });
+  }
+};
+
+const unpublishPost = async (req: Request, res: Response) => {
+  const postId = req.params.id!;
+
+  const post = await getPostOrFail(postId, res);
+  if (!post) return;
+
+  try {
+    const unpublishedPost = await prisma.post.update({
+      where: { id: postId },
+      data: { published: false },
+    });
+    res.json(unpublishedPost);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to unpublish post' });
+  }
+};
+
+export default {
+  getPostById,
+  getAllPosts,
+  createPost,
+  updatePost,
+  deletePost,
+  publishPost,
+  unpublishPost,
+};
