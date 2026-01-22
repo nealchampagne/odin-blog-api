@@ -32,11 +32,29 @@ const getCommentsByPostId = async (req: Request, res: Response) => {
   const postId = req.params.postId!;
 
   try {
-    const comments = await prisma.comment.findMany({
-      where: { postId },
-      orderBy: { createdAt: 'desc' },
+
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 10;
+    
+    const skip = (page - 1) * pageSize;
+
+    const [comments, total] = await Promise.all([
+      prisma.comment.findMany({
+        where: { postId },
+        skip,
+        take: pageSize,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.comment.count({ where: { postId } }),
+    ]);
+
+    res.json({
+      data: comments,
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
     });
-    res.json(comments);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch comments' });
   }

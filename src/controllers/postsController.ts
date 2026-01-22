@@ -50,12 +50,32 @@ const getAllPosts = async (req: Request, res: Response) => {
 
     const isAdmin = req.user?.role === 'ADMIN';
 
-    const posts = await prisma.post.findMany({
-      where: isAdmin ? {} : { published: true },
-      orderBy: { createdAt: 'desc' },
-    });
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 10;
+    
+    const skip = (page - 1) * pageSize;
 
-    res.json(posts);
+    const where = isAdmin ? {} : { published: true };
+
+    const [posts, total] = await Promise.all([
+      prisma.post.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.post.count({
+        where,
+      })
+    ]);
+
+    res.json({
+      data: posts,
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch posts' });
   }
