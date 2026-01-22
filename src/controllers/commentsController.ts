@@ -44,6 +44,7 @@ const getCommentsByPostId = async (req: Request, res: Response) => {
         skip,
         take: pageSize,
         orderBy: { createdAt: 'desc' },
+        include: { author: true },
       }),
       prisma.comment.count({ where: { postId } }),
     ]);
@@ -66,6 +67,7 @@ const getCommentById = async (req: Request, res: Response) => {
   try {
     const comment = await prisma.comment.findUnique({
       where: { id: commentId },
+      include: { author: true },
     });
 
     if (!comment) {
