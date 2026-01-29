@@ -7,7 +7,7 @@ import { requireRole } from '../middleware/requireRole';
 // --------------------
 // Public users routes
 // --------------------
-router.post('/register', controller.registerUser);
+router.post('/signup', controller.registerUser);
 router.post('/login', controller.loginUser);
 
 // --------------------

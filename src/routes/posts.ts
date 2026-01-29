@@ -1,6 +1,7 @@
 import { Router } from 'express';
 const router = Router();
-import controller from '../controllers/postsController';
+import postsController from '../controllers/postsController';
+import commentsController from '../controllers/commentsController';
 import { requireAuth } from '../middleware/auth';
 import { requireRole } from '../middleware/requireRole';
 import { optionalAuth } from '../middleware/optionalAuth';
@@ -9,27 +10,36 @@ import { optionalAuth } from '../middleware/optionalAuth';
 // Public posts routes
 // --------------------
 
-router.get('/', optionalAuth,controller.getAllPosts);
+router.get('/', optionalAuth, postsController.getAllPosts);
+router.get('/stats', requireAuth, requireRole('ADMIN'), postsController.getAdminStats);
+router.get('/:id', optionalAuth, postsController.getPostById);
 
-// Get stats
-router.get('/stats', requireAuth, requireRole('ADMIN'), controller.getAdminStats);
+// --------------------
+// Public comments routes (nested under posts)
+// --------------------
 
-router.get('/:id', optionalAuth, controller.getPostById);
+router.get('/:postId/comments', commentsController.getCommentsByPostId);
+
+// --------------------
+// Auth-required comment actions (but NOT admin-only)
+// --------------------
+
+router.use(requireAuth);
+
+router.post('/:postId/comments', commentsController.createComment);
+router.patch('/:postId/comments/:commentId', commentsController.updateComment);
+router.delete('/:postId/comments/:commentId', commentsController.deleteComment);
 
 // --------------------
 // Admin-only posts routes
 // --------------------
-router.use(requireAuth, requireRole('ADMIN'));
 
+router.use(requireRole('ADMIN'));
 
-
-// Create, update, and delete posts
-router.post('/', controller.createPost);
-router.patch('/:id', controller.updatePost);
-router.delete('/:id', controller.deletePost);
-
-// Publish/unpublish a post
-router.put('/:id/publish', controller.publishPost);
-router.put('/:id/unpublish', controller.unpublishPost);
+router.post('/', postsController.createPost);
+router.patch('/:id', postsController.updatePost);
+router.delete('/:id', postsController.deletePost);
+router.put('/:id/publish', postsController.publishPost);
+router.put('/:id/unpublish', postsController.unpublishPost);
 
 export default router;

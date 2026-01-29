@@ -99,7 +99,7 @@ const createComment = async (req: Request, res: Response) => {
 };
 
 const updateComment = async (req: Request, res: Response) => {
-  const commentId = req.params.id!;
+  const commentId = req.params.commentId!;
   const { content } = req.body;
 
   const comment = await getCommentOrFail(commentId, res);
@@ -119,7 +119,7 @@ const updateComment = async (req: Request, res: Response) => {
 };
 
 const deleteComment = async (req: Request, res: Response) => {
-  const commentId = req.params.id!;
+  const commentId = req.params.commentId!;
 
   const comment = await getCommentOrFail(commentId, res);
   if (!comment) return;
@@ -130,7 +130,7 @@ const deleteComment = async (req: Request, res: Response) => {
     await prisma.comment.delete({
       where: { id: commentId },
     });
-    res.status(204).send();
+    res.status(200).json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete comment' });
   }

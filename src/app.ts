@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import commentsRouter from './routes/comments';
 import postsRouter from './routes/posts';
 import usersRouter from './routes/users';
 import passport from './middleware/passport';
@@ -29,7 +28,6 @@ app.use((req, res, next) => {
 // Routes
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
-app.use('/', commentsRouter);
 
 app.use((
   err: Error & { status?: number },
