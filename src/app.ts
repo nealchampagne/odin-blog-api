@@ -10,7 +10,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://odin-blog-consumer-app.netlify.app",
-  "https://odin-blog-owner-app.vercel.app"
+  "https://nealchampagne-odin-blog-owner-app.vercel.app"
 ];
 
 app.use(
