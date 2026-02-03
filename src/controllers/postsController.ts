@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma';
+import { Prisma } from '@prisma/client';
 import type { Request, Response } from 'express';
 
 // --------------------
@@ -47,26 +48,37 @@ const getPostById = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-
     const isAdmin = req.user?.role === 'ADMIN';
 
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 10;
-    
     const skip = (page - 1) * pageSize;
 
     const where = isAdmin ? {} : { published: true };
+
+    const orderBy: Prisma.PostOrderByWithRelationInput[] = isAdmin
+      ? [
+          { published: 'asc' },
+          { publishedAt: 'desc' },
+          { createdAt: 'desc' }
+        ]
+      : [
+          { publishedAt: 'desc' }
+        ];
 
     const [posts, total] = await Promise.all([
       prisma.post.findMany({
         where,
         skip,
         take: pageSize,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
+        include: {
+          _count: {
+            select: { comments: true }
+          }
+        }
       }),
-      prisma.post.count({
-        where,
-      })
+      prisma.post.count({ where })
     ]);
 
     res.json({
@@ -80,6 +92,7 @@ const getAllPosts = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch posts' });
   }
 };
+
 
 // --------------------
 // Admin-only posts routes
@@ -171,7 +184,10 @@ const publishPost = async (req: Request, res: Response) => {
   try {
     const publishedPost = await prisma.post.update({
       where: { id: postId },
-      data: { published: true },
+      data: { 
+        published: true,
+        publishedAt: new Date()
+      },
     });
     res.json(publishedPost);
   } catch (error) {
@@ -188,7 +204,10 @@ const unpublishPost = async (req: Request, res: Response) => {
   try {
     const unpublishedPost = await prisma.post.update({
       where: { id: postId },
-      data: { published: false },
+      data: {
+        published: false,
+        publishedAt: null
+      },
     });
     res.json(unpublishedPost);
   } catch (error) {
