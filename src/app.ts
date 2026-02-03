@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import postsRouter from './routes/posts.js';
-import usersRouter from './routes/users.js';
+import postsRouter from './routes/posts';
+import usersRouter from './routes/users';
 import passport from './middleware/passport';
 import type { Request, Response, NextFunction } from 'express';
 
@@ -9,7 +9,10 @@ const app = express();
 
 app.use(
   cors({ 
-    origin: /http:\/\/localhost:\d+/, 
+    origin: [
+      "https://odin-blog-consumer-app.netlify.app",
+      "https://odin-blog-owner-n97nsdwsi-n-cs-projects-7e3a1f25.vercel.app"
+    ],
     credentials: true
   })
 );
