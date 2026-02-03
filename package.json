@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "tsup src/server.ts --watch --onSuccess \"node dist/server.js\"",
     "build": "tsup",
+    "postinstall": "prisma generate",
+    "render-build": "npm run build",
     "start": "node dist/server.js"
   },
   "repository": {
