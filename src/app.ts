@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import postsRouter from './routes/posts';
-import usersRouter from './routes/users';
+import postsRouter from './routes/posts.js';
+import usersRouter from './routes/users.js';
 import passport from './middleware/passport';
 import type { Request, Response, NextFunction } from 'express';
 
