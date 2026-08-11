@@ -1,8 +1,8 @@
 import { Router } from 'express';
 const router = Router();
-import controller from '../controllers/usersController';
-import { requireAuth } from '../middleware/auth';
-import { requireRole } from '../middleware/requireRole';
+import controller from '../controllers/usersController.js';
+import { requireAuth } from '../middleware/auth.js';
+import { requireRole } from '../middleware/requireRole.js';
 
 // --------------------
 // Public users routes

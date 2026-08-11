@@ -1,4 +1,4 @@
-import prisma from '../lib/prisma';
+import prisma from '../lib/prisma.js';
 import type { Request, Response } from 'express';
 import type { User as PrismaUser} from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -151,7 +151,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 };
 
 const getUserById = async (req: Request, res: Response) => {
-  const userId = req.params.id!;
+  const userId = req.params.id! as string;
 
   try {
     const user = await getUserOrFail(userId, res);
@@ -166,7 +166,7 @@ const getUserById = async (req: Request, res: Response) => {
 };
 
 const updateUserById = async (req: Request, res: Response) => {
-  const userId = req.params.id!;
+  const userId = req.params.id! as string;
   const { name } = req.body;
 
   try {
@@ -181,7 +181,7 @@ const updateUserById = async (req: Request, res: Response) => {
 };
 
 const deleteUserById = async (req: Request, res: Response) => {
-  const userId = req.params.id!;
+  const userId = req.params.id! as string;
 
   try {
     await prisma.user.delete({

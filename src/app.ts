@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import postsRouter from './routes/posts';
-import usersRouter from './routes/users';
-import passport from './middleware/passport';
+import postsRouter from './routes/posts.js';
+import usersRouter from './routes/users.js';
+import healthRouter from './routes/health.js';
+import passport from './middleware/passport.js';
 import type { Request, Response, NextFunction } from 'express';
 
 const app = express();
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
+app.use(healthRouter);
 
 app.use((
   err: Error & { status?: number },

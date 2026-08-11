@@ -1,5 +1,5 @@
-import './bootstrap'
-import app from './app';
+import './bootstrap.js'
+import app from './app.js';
 
 const PORT: number = Number(process.env.PORT) || 3000;
 

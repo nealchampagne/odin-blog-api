@@ -1,6 +1,6 @@
-import prisma from '../lib/prisma';
+import prisma from '../lib/prisma.js';
 import type { Request, Response } from 'express';
-import { assertOwnershipOrAdmin } from '../utils/auth';
+import { assertOwnershipOrAdmin } from '../utils/auth.js';
 
 // --------------------
 // Helpers
@@ -29,7 +29,7 @@ const ensureCanModify = async (comment: { authorId: string }, req: Request, res:
 // Public route controllers
 // --------------------
 const getCommentsByPostId = async (req: Request, res: Response) => {
-  const postId = req.params.postId!;
+  const postId = req.params.postId! as string;
 
   try {
 
@@ -62,7 +62,7 @@ const getCommentsByPostId = async (req: Request, res: Response) => {
 };
 
 const getCommentById = async (req: Request, res: Response) => {
-  const commentId = req.params.id!;
+  const commentId = req.params.id! as string;
 
   try {
     const comment = await prisma.comment.findUnique({
@@ -84,7 +84,7 @@ const getCommentById = async (req: Request, res: Response) => {
 // Protected route controllers
 // --------------------
 const createComment = async (req: Request, res: Response) => {
-  const postId = req.params.postId!;
+  const postId = req.params.postId! as string;
   const { content } = req.body;
   const authorId = req.user!.id;
 
@@ -99,7 +99,7 @@ const createComment = async (req: Request, res: Response) => {
 };
 
 const updateComment = async (req: Request, res: Response) => {
-  const commentId = req.params.commentId!;
+  const commentId = req.params.commentId! as string;
   const { content } = req.body;
 
   const comment = await getCommentOrFail(commentId, res);
@@ -119,7 +119,7 @@ const updateComment = async (req: Request, res: Response) => {
 };
 
 const deleteComment = async (req: Request, res: Response) => {
-  const commentId = req.params.commentId!;
+  const commentId = req.params.commentId! as string;
 
   const comment = await getCommentOrFail(commentId, res);
   if (!comment) return;

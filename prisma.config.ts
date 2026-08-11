@@ -1,5 +1,9 @@
 import "dotenv/config"; // ensures DATABASE_URL is loaded
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
+
+const connectionString = process.env.NODE_ENV === 'test'
+  ? process.env.TEST_DATABASE_URL
+  : process.env.DATABASE_URL;
 
 export default defineConfig({
   schema: "prisma/schema.prisma",   // explicitly point to your schema file
@@ -8,6 +12,6 @@ export default defineConfig({
     path: "prisma/migrations",      // optional, but recommended
   },
   datasource: {
-    url: env("DATABASE_URL"),       // use env() helper, not process.env directly
+    url: connectionString,       // use env() helper, not process.env directly
   },
 });

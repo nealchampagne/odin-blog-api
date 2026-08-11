@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     // File Layout
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
 
     // Environment Settings
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "target": "ES2023",
 
     // Node types (Prisma expects these)
-    "types": ["node"],
+    "types": ["node", "jest"],
     "typeRoots": ["./src/types", "./node_modules/@types"],
 
     // Outputs
@@ -36,5 +36,5 @@
   },
 
   // Program boundaries
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

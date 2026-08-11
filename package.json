@@ -1,5 +1,5 @@
 {
-  "name": "odin-blog-api",
+  "name": "blog-platform-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,20 +8,24 @@
     "build": "tsup",
     "postinstall": "prisma generate",
     "render-build": "npm run build",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "db:test:up": "docker-compose up -d db-test",
+    "db:test:down": "docker-compose down",
+    "db:test:migrate": "dotenv -e .env.test -- npx prisma migrate deploy",
+    "test": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test jest --runInBand --detectOpenHandles"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nealchampagne/odin-blog-api.git"
+    "url": "git+https://github.com/nealchampagne/blog-platform-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/nealchampagne/odin-blog-api/issues"
+    "url": "https://github.com/nealchampagne/blog-platform-api/issues"
   },
-  "homepage": "https://github.com/nealchampagne/odin-blog-api#readme",
+  "homepage": "https://github.com/nealchampagne/blog-platform-api#readme",
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.2.0",
@@ -42,11 +46,18 @@
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.0.0",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
+    "@types/supertest": "^7.2.1",
+    "dotenv-cli": "^11.0.0",
+    "esbuild": "^0.28.1",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.11",
     "prisma": "^7.2.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
     "ts-node": "^1.7.1",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",

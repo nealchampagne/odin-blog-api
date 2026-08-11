@@ -1,4 +1,4 @@
-import prisma from '../lib/prisma';
+import prisma from '../lib/prisma.js';
 import { Prisma } from '@prisma/client';
 import type { Request, Response } from 'express';
 
@@ -22,7 +22,7 @@ const getPostOrFail = async (postId: string, res: Response) => {
 // Public posts controllers
 // --------------------
 const getPostById = async (req: Request, res: Response) => {
-  const postId = req.params.id!;
+  const postId = req.params.id! as string;
 
   try {
     const isAdmin = req.user?.role === 'ADMIN';
@@ -126,7 +126,7 @@ const createPost = async (req: Request, res: Response) => {
   const authorId = req.user!.id;
 
   try {
-    if (!title.trim() || !content) {
+    if (!title || !title.trim() || !content) {
       return res.status(400).json({ error: 'Title and content are required' });
     }
     const newPost = await prisma.post.create({
@@ -139,7 +139,7 @@ const createPost = async (req: Request, res: Response) => {
 };
 
 const updatePost = async (req: Request, res: Response) => {
-  const postId = req.params.id!;
+  const postId = req.params.id! as string;
   const { title, content } = req.body;
 
   const post = await getPostOrFail(postId, res);
@@ -160,7 +160,7 @@ const updatePost = async (req: Request, res: Response) => {
 };
 
 const deletePost = async (req: Request, res: Response) => {
-  const postId = req.params.id!;
+  const postId = req.params.id! as string;
 
   const post = await getPostOrFail(postId, res);
   if (!post) return;
@@ -176,7 +176,7 @@ const deletePost = async (req: Request, res: Response) => {
 };
 
 const publishPost = async (req: Request, res: Response) => {
-  const postId = req.params.id!;
+  const postId = req.params.id! as string;
 
   const post = await getPostOrFail(postId, res);
   if (!post) return;
@@ -196,7 +196,7 @@ const publishPost = async (req: Request, res: Response) => {
 };
 
 const unpublishPost = async (req: Request, res: Response) => {
-  const postId = req.params.id!;
+  const postId = req.params.id! as string;
 
   const post = await getPostOrFail(postId, res);
   if (!post) return;

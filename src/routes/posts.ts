@@ -1,10 +1,10 @@
 import { Router } from 'express';
 const router = Router();
-import postsController from '../controllers/postsController';
-import commentsController from '../controllers/commentsController';
-import { requireAuth } from '../middleware/auth';
-import { requireRole } from '../middleware/requireRole';
-import { optionalAuth } from '../middleware/optionalAuth';
+import postsController from '../controllers/postsController.js';
+import commentsController from '../controllers/commentsController.js';
+import { requireAuth } from '../middleware/auth.js';
+import { requireRole } from '../middleware/requireRole.js';
+import { optionalAuth } from '../middleware/optionalAuth.js';
 
 // --------------------
 // Public posts routes
